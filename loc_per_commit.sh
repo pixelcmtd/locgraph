@@ -1,5 +1,6 @@
 #!/bin/sh
 
+{
 echo '[{}'
 
 for commit in $(git log --pretty=oneline | cut -d' ' -f1 | tac) ; do
@@ -10,3 +11,4 @@ for commit in $(git log --pretty=oneline | cut -d' ' -f1 | tac) ; do
 done
 
 echo ']'
+} | jq -c .
