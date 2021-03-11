@@ -12,11 +12,13 @@ commits = json.load(open(argv[1], 'r'))
 commits.pop(0)
 
 w = csv.writer(open(argv[2], 'w'))
-w.writerow(['commit', 'blank', 'comment', 'code', 'files'])
+w.writerow(['tag/commit', 'blank', 'comment', 'code', 'files'])
 
 for commit in commits:
-    cloc = commit['cloc'][lang]
-    w.writerow([commit['commit'],
+    cloc = {'blank': 0, 'comment': 0, 'code': 0, 'nFiles': 0}
+    if lang in commit['cloc']:
+        cloc = commit['cloc'][lang]
+    w.writerow([commit['tag'] if commit['tag'] != '' else commit['commit'],
                 cloc['blank'],
                 cloc['comment'],
                 cloc['code'],
