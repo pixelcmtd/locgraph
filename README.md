@@ -1,2 +1,2 @@
 # locgraph
-A tool for drawing a graph of LOC per commit.
+A tool for drawing a graph of LoC per commit.

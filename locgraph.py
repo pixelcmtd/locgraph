@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-import json
 import csv
+import json
 from sys import argv
 
-lang = 'SUM'
-if len(argv) > 3:
-    lang = argv[3]
+if len(argv) < 3:
+    print('Usage: locgraph <commits.json> <out.csv> [<lang>]')
+    exit(1)
 
 commits = json.load(open(argv[1], 'r'))
 commits.pop(0)
@@ -15,11 +15,20 @@ w = csv.writer(open(argv[2], 'w'))
 w.writerow(['tag/commit', 'blank', 'comment', 'code', 'files'])
 
 for commit in commits:
-    cloc = {'blank': 0, 'comment': 0, 'code': 0, 'nFiles': 0}
-    if lang in commit['cloc']:
+    lang = argv[3] if len(argv) > 3 else 'SUM' if 'cloc' in commit else 'Total'
+    if 'cloc' in commit and lang in commit['cloc']:
         cloc = commit['cloc'][lang]
-    w.writerow([commit['tag'] if commit['tag'] != '' else commit['commit'],
-                cloc['blank'],
-                cloc['comment'],
-                cloc['code'],
-                cloc['nFiles']])
+        w.writerow([commit['tag'] if commit['tag'] != '' else commit['commit'],
+                    cloc['blank'],
+                    cloc['comment'],
+                    cloc['code'],
+                    cloc['nFiles']])
+    elif 'tokei' in commit and lang in commit['tokei']:
+        tokei = commit['tokei'][lang]
+        w.writerow([commit['tag'] if commit['tag'] != '' else commit['commit'],
+                    tokei['blanks'],
+                    tokei['comments'],
+                    tokei['code'],
+                    -1])
+    else:
+        w.writerow([commit['tag'] if commit['tag'] != '' else commit['commit'], -1, -1, -1, -1])
